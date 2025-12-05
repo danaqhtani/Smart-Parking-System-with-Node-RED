@@ -1,0 +1,329 @@
+[
+    {
+        "id": "a007dda06ba6791e",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "9c5e3fb770469bef",
+        "type": "inject",
+        "z": "a007dda06ba6791e",
+        "name": "spot1_enter",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "payload": "spot1_enter",
+        "payloadType": "str",
+        "x": 120,
+        "y": 480,
+        "wires": [
+            [
+                "7c75483163eeb829"
+            ]
+        ]
+    },
+    {
+        "id": "b1069936d9f83c20",
+        "type": "inject",
+        "z": "a007dda06ba6791e",
+        "name": "spot1_leave",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "payload": "spot1_leave",
+        "payloadType": "str",
+        "x": 290,
+        "y": 480,
+        "wires": [
+            [
+                "7c75483163eeb829"
+            ]
+        ]
+    },
+    {
+        "id": "807cb98cdb99272b",
+        "type": "inject",
+        "z": "a007dda06ba6791e",
+        "name": "spot2_enter",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "payload": "spot2_enter",
+        "payloadType": "str",
+        "x": 460,
+        "y": 480,
+        "wires": [
+            [
+                "7c75483163eeb829"
+            ]
+        ]
+    },
+    {
+        "id": "a6e295774c8b7fd8",
+        "type": "inject",
+        "z": "a007dda06ba6791e",
+        "name": "spot2_leave",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "payload": "spot2_leave",
+        "payloadType": "str",
+        "x": 640,
+        "y": 480,
+        "wires": [
+            [
+                "7c75483163eeb829"
+            ]
+        ]
+    },
+    {
+        "id": "99df9a37da048aad",
+        "type": "inject",
+        "z": "a007dda06ba6791e",
+        "name": "spot3_enter",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "payload": "spot3_enter",
+        "payloadType": "str",
+        "x": 120,
+        "y": 560,
+        "wires": [
+            [
+                "7c75483163eeb829"
+            ]
+        ]
+    },
+    {
+        "id": "061694e916e3b668",
+        "type": "inject",
+        "z": "a007dda06ba6791e",
+        "name": "spot3_leave",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "payload": "spot3_leave",
+        "payloadType": "str",
+        "x": 300,
+        "y": 560,
+        "wires": [
+            [
+                "7c75483163eeb829"
+            ]
+        ]
+    },
+    {
+        "id": "30fa13a4030175f5",
+        "type": "inject",
+        "z": "a007dda06ba6791e",
+        "name": "reset",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "payload": "reset",
+        "payloadType": "str",
+        "x": 460,
+        "y": 560,
+        "wires": [
+            [
+                "7c75483163eeb829"
+            ]
+        ]
+    },
+    {
+        "id": "7c75483163eeb829",
+        "type": "function",
+        "z": "a007dda06ba6791e",
+        "name": "Parking Logic",
+        "func": "if (!context.spots) context.spots = [false, false, false];\nlet action = msg.payload;\nlet spots = context.spots;\n\nswitch(action) {\n    case 'spot1_enter': spots[0] = true; break;\n    case 'spot1_leave': spots[0] = false; break;\n    case 'spot2_enter': spots[1] = true; break;\n    case 'spot2_leave': spots[1] = false; break;\n    case 'spot3_enter': spots[2] = true; break;\n    case 'spot3_leave': spots[2] = false; break;\n    case 'reset': spots = [false, false, false]; break;\n}\n\ncontext.spots = spots;\nlet occupied = spots.filter(s => s).length;\n\nmsg.payload = {\n    totalSpots: 3,\n    occupiedSpots: occupied,\n    availableSpots: 3 - occupied,\n    spots: spots\n};\nreturn msg;",
+        "outputs": 1,
+        "x": 460,
+        "y": 200,
+        "wires": [
+            [
+                "5ac0120c968f44fd",
+                "txt_available",
+                "gauge_occupied",
+                "led_spot1",
+                "led_spot2",
+                "led_spot3"
+            ]
+        ]
+    },
+    {
+        "id": "5ac0120c968f44fd",
+        "type": "debug",
+        "z": "a007dda06ba6791e",
+        "name": "debug 1",
+        "active": true,
+        "tosidebar": true,
+        "x": 790,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "txt_available",
+        "type": "ui_text",
+        "z": "a007dda06ba6791e",
+        "group": "grp_status",
+        "order": 1,
+        "label": "Available Spots",
+        "format": "{{msg.payload.availableSpots}}",
+        "x": 790,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "gauge_occupied",
+        "type": "ui_gauge",
+        "z": "a007dda06ba6791e",
+        "group": "grp_status",
+        "order": 2,
+        "label": "Occupied Spots",
+        "format": "{{msg.payload.occupiedSpots}}",
+        "min": 0,
+        "max": 3,
+        "x": 800,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "led_spot1",
+        "type": "ui_led",
+        "z": "a007dda06ba6791e",
+        "order": 1,
+        "group": "grp_spots",
+        "label": "Spot 1",
+        "colorForValue": [
+            {
+                "color": "red",
+                "value": "true"
+            },
+            {
+                "color": "green",
+                "value": "false"
+            }
+        ],
+        "x": 800,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "led_spot2",
+        "type": "ui_led",
+        "z": "a007dda06ba6791e",
+        "order": 2,
+        "group": "grp_spots",
+        "label": "Spot 2",
+        "colorForValue": [
+            {
+                "color": "red",
+                "value": "true"
+            },
+            {
+                "color": "green",
+                "value": "false"
+            }
+        ],
+        "x": 800,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "led_spot3",
+        "type": "ui_led",
+        "z": "a007dda06ba6791e",
+        "order": 3,
+        "group": "grp_spots",
+        "label": "Spot 3",
+        "colorForValue": [
+            {
+                "color": "red",
+                "value": "true"
+            },
+            {
+                "color": "green",
+                "value": "false"
+            }
+        ],
+        "x": 800,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "grp_status",
+        "type": "ui_group",
+        "name": "Parking Status",
+        "tab": "tab_ui",
+        "order": 1,
+        "width": "6"
+    },
+    {
+        "id": "grp_spots",
+        "type": "ui_group",
+        "name": "Spots View",
+        "tab": "tab_ui",
+        "order": 2,
+        "width": "6"
+    },
+    {
+        "id": "tab_ui",
+        "type": "ui_tab",
+        "name": "Parking Dashboard",
+        "icon": "dashboard"
+    },
+    {
+        "id": "3646b3b5d1b35d56",
+        "type": "global-config",
+        "env": [],
+        "modules": {
+            "node-red-dashboard": "3.6.6",
+            "node-red-contrib-ui-led": "0.4.11"
+        }
+    }
+]
